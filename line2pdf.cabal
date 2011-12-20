@@ -1,5 +1,5 @@
 name:               line2pdf
-version:            0.0.7
+version:            0.0.8
 copyright:          2008 Audrey Tang
 license:            BSD3
 license-file:       LICENSE
@@ -24,6 +24,7 @@ library
     else
         build-depends: base < 3
     hs-source-dirs:     src
+    ghc-options:       -Wall
 
 executable line2pdf
     main-is:        line2pdf.hs
@@ -33,3 +34,4 @@ executable line2pdf
     else
         build-depends: base < 3
     hs-source-dirs:     . src
+    ghc-options:       -Wall
