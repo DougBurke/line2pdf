@@ -59,7 +59,8 @@ defaultConfig enc txt = MkAppConfig
 
 type M = IO
 type Obj = Int
-
+type FontInfo = (Int, String)
+  
 lineToPDF :: AppConfig -> IO ()
 lineToPDF appConfig = do
     hSetBinaryMode stdout True
@@ -127,12 +128,12 @@ writeHeader encs = do
     info <- printObj $ "/CreationDate(D:20080707163949+08'00')"
                     ++ "/Producer(line2pdf.hs)"
                     ++ "/Title(Untitled)"
-    encoding    <- printObj strDefaultEncoding
+    encding     <- printObj strDefaultEncoding
     latinFonts  <- (`mapM` ([1..] `zip` baseFonts)) $ \(n, font) -> do
         markObj $ \obj -> do
             pr$ "/Type/Font" ++ "/Subtype/Type1" ++ "/Name/F"
             pr$ show (n :: Int)
-            pr$ "/Encoding " ++ show encoding ++ " 0 R"
+            pr$ "/Encoding " ++ show encding ++ " 0 R"
             pr$ font
             return $ "/F" ++ show n ++ " " ++ show obj ++ " 0 R"
     cjkFonts    <- (`mapM` encs) $ \enc -> case enc of
@@ -260,7 +261,7 @@ writePages appConfig@MkAppConfig
     , srcHead    = hd
     , srcLines   = lns
     , srcEscape  = esc
-    , pageHeight = height
+    -- , pageHeight = height -- we do not check if the text overflows the page
     } = do
     pos <- newRef =<< startPage appConfig
 
@@ -427,6 +428,7 @@ writeFontsBig5 = writeFonts fontsBig5 $ MkFontConfig
                    ++ "/ItalicAngle 0"
     }
 
+writeFonts :: [FontInfo] -> FontConfig -> M [String]
 writeFonts fonts cfg = do 
     ref <- newRef []
     let addFont o fn = modifyRef ref
@@ -473,19 +475,19 @@ fontFamily n f =
     , (n+3, f ++ ",BoldItalic")
     ]
 
-fontsEUC_JP :: [(Int, String)]
+fontsEUC_JP :: [FontInfo]
 fontsEUC_JP = fontFamily 20 "HeiseiKakuGo-W5"
 
-fontsShiftJIS :: [(Int, String)]
+fontsShiftJIS :: [FontInfo]
 fontsShiftJIS = fontFamily 25 "HeiseiKakuGo-W5"
 
-fontsBig5 :: [(Int, String)]
+fontsBig5 :: [FontInfo]
 fontsBig5 = fontFamily 30 "MingLiU"
 
-fontsGBK :: [(Int, String)]
+fontsGBK :: [FontInfo]
 fontsGBK = fontFamily 35 "STSong"
 
-fontsEUC_KR :: [(Int, String)]
+fontsEUC_KR :: [FontInfo]
 fontsEUC_KR = fontFamily 40 "#B5#B8#BF#F2#C3#BC"
 
 -- Target size = AFP size / 3
