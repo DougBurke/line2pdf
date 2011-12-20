@@ -1,4 +1,5 @@
 {-# LANGUAGE ImplicitParams, ExistentialQuantification #-}
+{-# LANGUAGE DeriveDataTypeable #-}
 
 module Text.LineToPDF.Internals where
 import Data.IORef
@@ -7,6 +8,8 @@ import System.IO.Unsafe
 import Control.Applicative
 import qualified Data.ByteString.Lazy.Char8 as L
 import qualified Data.IntMap as IM
+
+import System.Console.CmdArgs (Data, Typeable)
 
 {-# NOINLINE __POS__ #-}
 __POS__ :: IORef Int
@@ -31,7 +34,8 @@ data Encoding
     | EUC_JP
     | EUC_KR
     | ShiftJIS
-
+      deriving (Data, Typeable, Show, Eq)
+               
 data AppConfig = forall a. MkAppConfig
     { pageWidth  :: Int
     , pageHeight :: Int

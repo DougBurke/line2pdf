@@ -1,30 +1,62 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE RecordWildCards #-}
+
 module Main where
-import System.Exit
-import System.Environment
+
+import System.Exit (exitSuccess)
 import Text.LineToPDF
 import qualified Data.ByteString.Lazy.Char8 as L
-
 import Control.Monad (when)
+import System.Console.CmdArgs
 
-usage :: IO ()
-usage = do
-  putStrLn "Usage: line2pdf [-big5|-gbk|-shiftjis|-euc-jp|-euc-kr] input.txt > output.pdf"
-  putStrLn "  (Form feed (^L) in input denotes a pagebreak.)"
-  exitWith ExitSuccess
-  
+import Paths_line2pdf (version)
+import Data.Version (showVersion)
+
+data Arguments = 
+  Arguments 
+  {
+    encoding :: Encoding
+  , file :: FilePath
+  } deriving (Show, Data, Eq, Typeable)
+
+progName :: String
+progName = "line2pdf"
+
+summaryText :: String
+summaryText = progName ++ " v" ++ showVersion version ++ ", (C) Audrey Tang"
+
+arguments :: Arguments
+arguments = 
+  Arguments
+  {
+    encoding = enum 
+               [ Latin &= help "Default encoding"
+               , Big5 
+               , GBK
+               , EUC_JP
+               , EUC_KR
+               , ShiftJIS
+               ]
+  , file = def &= args &= typFile
+  }
+  &= program progName
+  &= summary summaryText
+  &= help "A simple program to convert lines of text into a PDF file."
+  &= details [ "Convert a text file into PDF. The only formatting that is supported"
+             , "are new lines and page breaks, indicated by a Form Feed character (^L)."
+             , "The PDF is written to stdout."
+             , ""
+             , "Examples:"
+             , "  " ++ progName ++ " in.txt > out.pdf"
+             , "  " ++ progName ++ " --shiftjis in.txt > out.pdf"
+             , ""
+             ]
+
 main :: IO ()
 main = do
-    args <- getArgs
-    when (null args) usage
-
-    let (enc, input) = case args of
-          ("-big5":i:_)     -> (Big5, i)
-          ("-gbk":i:_)      -> (GBK, i)
-          ("-euc-jp":i:_)   -> (EUC_JP, i)
-          ("-euc-kr":i:_)   -> (EUC_KR, i)
-          ("-shiftjis":i:_) -> (ShiftJIS, i)
-          (i:_)             -> (Latin, i)
-          []                -> error "usage error" -- quieten -Wall
-
-    src <- L.readFile input
-    lineToPDF $ defaultConfig enc src
+  let cmode = cmdArgsMode arguments
+  Arguments {..} <- cmdArgsRun cmode
+  when (null file) $ putStr (show cmode) >> exitSuccess
+    
+  src <- L.readFile file
+  lineToPDF $ defaultConfig encoding src

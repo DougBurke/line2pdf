@@ -1,0 +1,23 @@
+# Version 0.0.9
+
+Changed command-line parsing to use the CmdArgs package;
+the usage now looks like
+
+  line2pdf [OPTIONS] [FILE]
+    A simple program to convert lines of text into a PDF file.
+
+  Common flags:
+    -l --latin     Default encoding
+    -b --big5    
+    -g --gbk     
+       --euc-jp  
+       --euc-kr  
+    -s --shiftjis
+    -? --help      Display help message
+    -V --version   Print version information
+
+The small_base flag has been dropped from the Cabal file.
+
+# Version 0.0.8
+
+Minor clean up, no functional changes.
