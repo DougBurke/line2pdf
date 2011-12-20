@@ -129,7 +129,7 @@ writeHeader encs = do
                     ++ "/Producer(line2pdf.hs)"
                     ++ "/Title(Untitled)"
     encding     <- printObj strDefaultEncoding
-    latinFonts  <- (`mapM` ([1..] `zip` baseFonts)) $ \(n, font) -> do
+    latinFonts  <- (`mapM` ([1..] `zip` baseFonts)) $ \(n, font) ->
         markObj $ \obj -> do
             pr$ "/Type/Font" ++ "/Subtype/Type1" ++ "/Name/F"
             pr$ show (n :: Int)
@@ -171,7 +171,7 @@ baseFonts =
 pr :: String -> M ()
 pr str = do
     putStr str
-    modifyRef __POS__ (+ (length str))
+    modifyRef __POS__ (+ length str)
 
 currentLocation :: IO Int
 currentLocation = readRef __POS__
@@ -265,7 +265,7 @@ writePages appConfig@MkAppConfig
     } = do
     pos <- newRef =<< startPage appConfig
 
-    (`mapM_` lns) $ \ln -> do
+    (`mapM_` lns) $ \ln -> 
         case len ln of
             1 | hd ln == '\f' -> do
                 endPage =<< readRef pos
@@ -331,7 +331,7 @@ data FontConfig = MkFontConfig
     }
 
 writeFontsShiftJIS :: M [String]
-writeFontsShiftJIS = writeFonts fontsShiftJIS $ MkFontConfig
+writeFontsShiftJIS = writeFonts fontsShiftJIS MkFontConfig
     { encoding      = "90ms-RKSJ-H"
     , cidFontType   = "0"
     , ordering      = "Japan1"
@@ -350,7 +350,7 @@ writeFontsShiftJIS = writeFonts fontsShiftJIS $ MkFontConfig
 
 
 writeFontsEUC_JP :: M [String]
-writeFontsEUC_JP = writeFonts fontsEUC_JP $ MkFontConfig
+writeFontsEUC_JP = writeFonts fontsEUC_JP MkFontConfig
     { encoding      = "EUC-H/WinCharSet 128"
     , cidFontType   = "2"
     , ordering      = "Japan1"
@@ -373,7 +373,7 @@ writeFontsEUC_JP = writeFonts fontsEUC_JP $ MkFontConfig
     }
 
 writeFontsEUC_KR :: M [String]
-writeFontsEUC_KR = writeFonts fontsEUC_KR $ MkFontConfig
+writeFontsEUC_KR = writeFonts fontsEUC_KR MkFontConfig
     { encoding      = "KSCms-UHC-H/WinCharSet 129"
     , cidFontType   = "2"
     , ordering      = "Korea1"
@@ -396,7 +396,7 @@ writeFontsEUC_KR = writeFonts fontsEUC_KR $ MkFontConfig
     }
 
 writeFontsGBK :: M [String]
-writeFontsGBK = writeFonts fontsGBK $ MkFontConfig
+writeFontsGBK = writeFonts fontsGBK MkFontConfig
     { encoding      = "GB-EUC-H"
     , cidFontType   = "2"
     , ordering      = "GB1"
@@ -413,7 +413,7 @@ writeFontsGBK = writeFonts fontsGBK $ MkFontConfig
     }
 
 writeFontsBig5 :: M [String]
-writeFontsBig5 = writeFonts fontsBig5 $ MkFontConfig
+writeFontsBig5 = writeFonts fontsBig5 MkFontConfig
     { encoding      = "ETen-B5-H"
     , cidFontType   = "2"
     , ordering      = "CNS1"
