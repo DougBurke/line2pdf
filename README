@@ -1,1 +1,23 @@
 "line2pdf" is a simple command-line utility to convert text into PDF.
+
+    line2pdf [OPTIONS] [FILE]
+      A simple program to convert lines of text into a PDF file.
+    
+    Common flags:
+      -l --latin     Default encoding
+      -b --big5    
+      -g --gbk     
+         --euc-jp  
+         --euc-kr  
+      -s --shiftjis
+      -? --help      Display help message
+      -V --version   Print version information
+    
+    Convert a text file into PDF. The only formatting that is supported
+    are new lines and page breaks, indicated by a Form Feed character (^L).
+    The PDF is written to stdout.
+    
+    Examples:
+      line2pdf in.txt > out.pdf
+      line2pdf --shiftjis in.txt > out.pdf
+
