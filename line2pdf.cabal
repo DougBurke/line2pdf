@@ -1,5 +1,5 @@
 name:               line2pdf
-version:            0.0.9
+version:            0.0.10
 copyright:          2008 Audrey Tang
 license:            BSD3
 license-file:       LICENSE
@@ -16,7 +16,6 @@ Tested-With:        GHC==7.0.4
 
 library
     exposed-modules: Text.LineToPDF Text.LineToPDF.Internals
-    extensions:      ImplicitParams, ExistentialQuantification
     build-depends: base >= 3,
                    containers >= 0.3 && < 0.5,
                    bytestring >= 0.9 && < 1.0,
@@ -26,7 +25,6 @@ library
 
 executable line2pdf
     main-is:        line2pdf.hs
-    extensions:     ImplicitParams, ExistentialQuantification
     build-depends: base >= 3,
                    containers >= 0.3 && < 0.5,
                    bytestring >= 0.9 && < 1.0,

@@ -1,3 +1,7 @@
+# Version 0.0.10
+
+Added a --fontsize flag.
+
 # Version 0.0.9
 
 Changed command-line parsing to use the CmdArgs package;

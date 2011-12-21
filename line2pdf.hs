@@ -17,6 +17,7 @@ data Arguments =
   {
     encoding :: Encoding
   , file :: FilePath
+  , fontsize :: Int
   } deriving (Show, Data, Eq, Typeable)
 
 progName :: String
@@ -37,6 +38,7 @@ arguments =
                , EUC_KR
                , ShiftJIS
                ]
+  , fontsize = 12 &= help "Font size in points (default 12)"
   , file = def &= args &= typFile
   }
   &= program progName
@@ -59,4 +61,6 @@ main = do
   when (null file) $ putStr (show cmode) >> exitSuccess
     
   src <- L.readFile file
-  lineToPDF $ defaultConfig encoding src
+  
+  let config = defaultConfig encoding src
+  lineToPDF $ config { ptSize = fromIntegral fontsize } 
