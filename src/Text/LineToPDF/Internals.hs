@@ -2,6 +2,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 
 module Text.LineToPDF.Internals where
+
 import Data.IORef
 import System.IO
 import System.IO.Unsafe
@@ -36,10 +37,18 @@ data Encoding
     | ShiftJIS
       deriving (Data, Typeable, Show, Eq)
                
+data FontStyle =  
+  Standard
+  | Italic
+  | Bold
+  | BoldItalic
+    deriving (Data, Typeable, Show, Eq)
+  
 data AppConfig = forall a. MkAppConfig
     { pageWidth  :: Int
     , pageHeight :: Int
     , ptSize     :: Float
+    , fontStyle  :: FontStyle
     , encodings  :: [Encoding]
     , srcLines   :: [a]
     , srcPut     :: a -> IO ()
@@ -53,6 +62,7 @@ defaultConfig enc txt = MkAppConfig
     { pageWidth  = 842
     , pageHeight = 595
     , ptSize     = 12
+    , fontStyle  = Standard
     , encodings  = [enc]
     , srcLines   = L.lines txt
     , srcPut     = L.putStr
@@ -209,16 +219,21 @@ markLocation obj = do
     loc <- currentLocation
     modifyRef __LOC__ $ IM.insert obj (show loc)
 
-fontOf :: Encoding -> String
-fontOf Latin    = "1"
-fontOf EUC_JP   = "20"
-fontOf ShiftJIS = "25"
-fontOf Big5     = "30"
-fontOf GBK      = "35"
-fontOf EUC_KR   = "40"
+-- Experimental support for font styles, currently only
+-- for the Latin encoding.
+fontOf :: Encoding -> FontStyle -> String
+fontOf Latin    Standard    = "1"
+fontOf Latin    Italic      = "2"
+fontOf Latin    Bold        = "3"
+fontOf Latin    BoldItalic  = "4"
+fontOf EUC_JP   _ = "20"
+fontOf ShiftJIS _ = "25"
+fontOf Big5     _ = "30"
+fontOf GBK      _ = "35"
+fontOf EUC_KR   _ = "40"
 
 startPage :: (?tPages :: Obj, ?resources :: Obj) => AppConfig -> M Int
-startPage MkAppConfig{ pageHeight = height, ptSize = pt, encodings = encs } = do
+startPage MkAppConfig{ pageHeight = height, ptSize = pt, fontStyle = fs, encodings = encs } = do
     markObj $ \obj -> do
         modifyRef __PAGE__ (obj:)
         pr$ "/Type/Page"
@@ -235,7 +250,7 @@ startPage MkAppConfig{ pageHeight = height, ptSize = pt, encodings = encs } = do
 
     streamPos <- currentLocation
     pr$ "BT\n";
-    let font = fontOf $ case encs of
+    let font = flip fontOf fs $ case encs of
             (l:_)   -> l
             _       -> Latin
     pr$ "/F" ++ font ++ " " ++ show pt ++ " Tf\n"

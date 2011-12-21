@@ -4,19 +4,23 @@
       A simple program to convert lines of text into a PDF file.
     
     Common flags:
-      -l --latin         Default encoding
-      -b --big5    
-      -g --gbk     
-         --euc-jp  
-         --euc-kr  
-      -s --shiftjis
-      -f --fontsize=INT  Font size in points (default 12)
+      -l --latin                Default encoding
+      -b --big5               
+      -g --gbk                
+         --euc-jp             
+         --euc-kr             
+      -s --shiftjis           
+         --fontsize=INT         Font size in points (default 12)
+         --fontstyle=FONTSTYLE  Font style (standard, italic, bold, or
+                                bolditalic)
       -? --help          Display help message
       -V --version       Print version information
     
     Convert a text file into PDF. The only formatting that is supported
     are new lines and page breaks, indicated by a Form Feed character (^L).
     The PDF is written to stdout.
+
+    The fontstyle option is only supported for the latin encoding.
     
     Examples:
       line2pdf in.txt > out.pdf
